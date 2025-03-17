@@ -1,13 +1,13 @@
 package ru.minusd.security;
 
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class SpringSecurityApplication {
+public class SpringApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(SpringSecurityApplication.class, args);
+        org.springframework.boot.SpringApplication.run(SpringApplication.class, args);
+
     }
 
 }
