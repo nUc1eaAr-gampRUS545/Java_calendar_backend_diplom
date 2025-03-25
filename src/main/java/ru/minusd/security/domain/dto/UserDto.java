@@ -1,6 +1,6 @@
 package ru.minusd.security.domain.dto;
 import lombok.Data;
-import ru.minusd.security.domain.model.Role;
+import ru.minusd.security.domain.entity.Role;
 
 import java.io.Serializable;
 

@@ -1,12 +1,11 @@
 package ru.minusd.security.domain.dto;
 
 import lombok.Data;
-import ru.minusd.security.domain.model.FileInfo;
-import ru.minusd.security.domain.model.Place;
-import ru.minusd.security.domain.model.User;
+import ru.minusd.security.domain.entity.FileInfo;
+import ru.minusd.security.domain.entity.Place;
 
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -16,9 +15,10 @@ public class TaskDto implements Serializable {
     private Long id;
     private String title;
     private String description;
-    private LocalDate startDate;
-    private LocalDate dueDate;
+    private LocalDateTime startDate;
+    private LocalDateTime dueDate;
     private Place place;
+    private String importance;
     private Set<FileInfo> files = new HashSet<>();
     private Set<UserDto> users  = new HashSet<>();
 }

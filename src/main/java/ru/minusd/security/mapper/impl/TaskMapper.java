@@ -4,7 +4,7 @@ import lombok.Data;
 import org.springframework.stereotype.Component;
 import ru.minusd.security.domain.dto.TaskDto;
 import ru.minusd.security.domain.dto.UserDto;
-import ru.minusd.security.domain.model.Task;
+import ru.minusd.security.domain.entity.Task;
 import ru.minusd.security.mapper.GenericMap;
 
 import java.util.HashSet;
@@ -13,7 +13,8 @@ import java.util.Set;
 @Component
 @Data
 public class TaskMapper implements GenericMap<Task, TaskDto> {
-    private UserMapper userMapper = new UserMapper();
+    private final UserMapper userMapper;
+
     @Override
     public TaskDto map(Task task) {
         if (task==null) {
@@ -28,6 +29,7 @@ public class TaskMapper implements GenericMap<Task, TaskDto> {
         taskDto.setTitle(task.getTitle());
         taskDto.setDescription(task.getDescription());
         taskDto.setDueDate(task.getDueDate());
+        taskDto.setImportance(task.getImportance());
         taskDto.setStartDate(task.getStartDate());
         taskDto.setFiles(task.getFiles());
         taskDto.setPlace(task.getPlace());

@@ -3,7 +3,7 @@ package ru.minusd.security.mapper.impl;
 import lombok.Data;
 import org.springframework.stereotype.Component;
 import ru.minusd.security.domain.dto.OrganizationDto;
-import ru.minusd.security.domain.model.Organization;
+import ru.minusd.security.domain.entity.Organization;
 import ru.minusd.security.mapper.GenericMap;
 
 @Component

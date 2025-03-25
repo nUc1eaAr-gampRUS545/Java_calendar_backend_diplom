@@ -1,14 +1,10 @@
 package ru.minusd.security.domain.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.minusd.security.domain.model.FileInfo;
-import ru.minusd.security.domain.model.Organization;
-import ru.minusd.security.domain.model.User;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -37,7 +33,7 @@ public class ApplicationCreateRequest {
     private String email;
 
     @Schema(description = "Телефон пользователя", example = "+7(999)999-99-99")
-    @Size(min = 8, max = 50, message = "Телефон пользователя должно содержать от 5 до 50 символов")
+    @Size(min = 11, max = 16, message = "Телефон пользователя должно содержать от 5 до 50 символов")
     @NotBlank(message = "Телефон пользователя не может быть пустыми")
     private String phoneNumber;
 
@@ -53,32 +49,26 @@ public class ApplicationCreateRequest {
 
     @Schema(description = "ID организации", example = "1")
     @Min(value = 1, message = "ID организации должно быть положительным числом")
-    private Long organization;
+    private Long organizationId;
 
     @Schema(description = "ID создателя задачи", example = "1")
     @Min(value = 1, message = "ID создателя заявки должно быть положительным числом")
-    private Long createdByUser;
+    private Long createdByUserId;
+
+    @Schema(description = "ID создателя типа задачи", example = "1")
+    @Min(value = 1, message = "ID типа задачи должно быть положительным числом")
+    private Long workTypeId;
 
     @Schema(description = "ID ответственного лица", example = "1")
     @Min(value = 1, message = "ID ответственного лица должно быть положительным числом")
-    private Long responsiblePerson;
+    private Long responsiblePersonId;
 
     @Schema(description = "ID ответственного за зону", example = "1")
     @Min(value = 1, message = "ID ответственного лица должно быть положительным числом")
-    private Long zoneOwner;
+    private Long zoneOwnerId;
 
     @Schema(description = "ID's файлов", example = "[1,2,3]")
-    private Set<Long> files;
+    private Set<Long> fileIds;
 
-    private Boolean zoneOwnerApproval;
 
-    private Boolean securityApproval;
-
-    private Boolean isCompleted;
-
-    private Boolean isSafetyBriefingCompleted;
-
-    private Boolean isElectricalSafetyTrainingCompleted;
-
-    private Boolean isFireSafetyTrainingCompleted;
 }

@@ -38,6 +38,20 @@ public class UserControllerImpl implements UserController {
         }
     }
 
+    @GetMapping
+    @Override
+    @Operation(summary = "Найти всех пользователей")
+    public ResponseEntity<?> findAllUsers() {
+        try {
+            return ResponseEntity.ok(SuccessResponse.builder().success(true).message("Пользователи успешно получены")
+                    .data(userService.findAll()).build());
+
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorResponse.builder()
+                    .success(false).status(HttpStatus.NOT_FOUND.value()).message("Не удалось найти пользоватей").details(e.getMessage()).build());
+        }
+    }
+
     @GetMapping("/{id}/tasks")
     @Operation(summary = "Найти задачи пользователя")
     public ResponseEntity<?> findUserTasksById(@PathVariable Long id) {
@@ -50,6 +64,7 @@ public class UserControllerImpl implements UserController {
             return ResponseEntity.ok(SuccessResponse.builder().success(true).message("Задачи пользователя " + id).data(tasks).build());
 
         } catch (RuntimeException e) {
+            logger.error("Не удалось найти задачи пользователя: {}",e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorResponse.builder().success(false).status(HttpStatus.NOT_FOUND.value()).message("Не удалось найти задачи пользователя").details(e.getMessage()).build());
         }
     }

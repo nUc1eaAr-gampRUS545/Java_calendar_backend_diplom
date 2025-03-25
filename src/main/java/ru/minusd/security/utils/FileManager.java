@@ -60,7 +60,7 @@ public class FileManager {
         }
     }
 
-    public Resource download(String path) throws IOException {
+    public String download(String path) throws IOException {
         final String baseUrl = "https://cloud-api.yandex.net/v1/disk/resources/download";
 
         RequestEntity<Void> requestEntity = RequestEntity.get(
@@ -77,18 +77,8 @@ public class FileManager {
             throw new IOException("Error getting download link from Yandex Disk");
         }
 
-        try {
-            URL url = new URL(response.getBody().href());
-            Resource resource = new UrlResource(url);
+        return response.getBody().href();
 
-            if (resource.exists() && resource.isReadable()) {
-                return resource;
-            } else {
-                throw new IOException("Downloaded resource is not accessible or readable.");
-            }
-        } catch (MalformedURLException e) {
-            throw new IOException("Invalid download URL received from Yandex Disk",e);
-        }
     }
 
     public void createDirectory(String path) {

@@ -9,7 +9,7 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import ru.minusd.security.domain.model.User;
+import ru.minusd.security.domain.entity.User;
 
 import java.security.Key;
 import java.util.Date;

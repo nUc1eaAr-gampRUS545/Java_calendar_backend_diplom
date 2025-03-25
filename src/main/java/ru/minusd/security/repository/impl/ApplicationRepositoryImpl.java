@@ -5,7 +5,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.springframework.stereotype.Repository;
-import ru.minusd.security.domain.model.Application;
+import ru.minusd.security.domain.entity.Application;
 import ru.minusd.security.repository.ApplicationRepository;
 
 import java.util.List;
@@ -41,8 +41,26 @@ public class ApplicationRepositoryImpl implements ApplicationRepository {
     }
 
     @Override
-    public List<Application> findAll() {
-        return List.of();
+    public Optional<List<Application>> findAllApplications(Long id) {
+        try (Session session = getSession()) {
+            String hql = "SELECT DISTINCT a FROM Application a " +
+                    "LEFT JOIN FETCH a.organizationByApplication " +
+                    "LEFT JOIN FETCH a.createdByUserApplication " +
+                    "LEFT JOIN FETCH a.responsiblePersonApplication " +
+                    "LEFT JOIN FETCH a.zoneOwnerApplication " +
+                    "LEFT JOIN FETCH a.files " +
+                    "LEFT JOIN FETCH a.workType " +
+                    "WHERE a.createdByUserApplication.id = :id " +
+                    "OR a.responsiblePersonApplication.id = :id " +
+                    "OR a.zoneOwnerApplication.id = :id";
+
+            return Optional.ofNullable(session.createQuery(hql,Application.class).setParameter("id",id).list());
+        }
+    }
+
+    @Override
+    public Optional<List<Application>> findAll() {
+        return null;
     }
 
 

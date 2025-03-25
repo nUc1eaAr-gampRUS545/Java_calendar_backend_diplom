@@ -1,7 +1,7 @@
 package ru.minusd.security.repository;
 
-import ru.minusd.security.domain.model.FileInfo;
-import ru.minusd.security.domain.model.Task;
+import ru.minusd.security.domain.entity.FileInfo;
+import ru.minusd.security.domain.entity.Task;
 
 import java.util.Set;
 

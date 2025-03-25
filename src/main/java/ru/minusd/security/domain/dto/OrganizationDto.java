@@ -9,5 +9,4 @@ public class OrganizationDto implements Serializable {
     private Long id;
     private String title;
     private String description;
-    private OrganizationDto organization;
 }

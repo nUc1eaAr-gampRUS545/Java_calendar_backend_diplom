@@ -11,16 +11,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.minusd.security.controller.TaskController;
 import ru.minusd.security.domain.dto.request.AddFilesInTaskRequest;
+import ru.minusd.security.domain.dto.request.TaskUpdateRequest;
 import ru.minusd.security.domain.dto.response.ErrorResponse;
 import ru.minusd.security.domain.dto.response.SuccessResponse;
 import ru.minusd.security.domain.dto.request.TaskCreateRequest;
 import ru.minusd.security.domain.dto.TaskDto;
-import ru.minusd.security.domain.model.Task;
-import ru.minusd.security.mapper.impl.TaskMapper;
 import ru.minusd.security.service.TaskService;
 
 @RestController
-@RequestMapping("/task")
+@RequestMapping("/tasks")
 @RequiredArgsConstructor
 @CrossOrigin("*")
 @Tag(name = "Задачи")
@@ -37,7 +36,25 @@ public class TaskControllerImpl implements TaskController {
             TaskDto createdTask = taskService.save(request);
             return ResponseEntity.status(HttpStatus.CREATED).body(SuccessResponse.builder().success(true).message("Задача успешно создана").data(createdTask).build());
         } catch (RuntimeException e) {
-            return catchException(e,"Ошибка при создании задачи");
+            logger.error("Ошибка при создании задачи: {}",e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorResponse.builder()
+                    .success(false).status(HttpStatus.BAD_REQUEST.value())
+                    .message("Ошибка:").details(e.getMessage()).build());
+        }
+    }
+    @Override
+    @PutMapping
+    @Operation(summary = "Обновление задачи")
+    public ResponseEntity<?> updateTask(@RequestBody @Valid TaskUpdateRequest request) {
+        try {
+            TaskDto createdTask = taskService.updateTask(request);
+            return ResponseEntity.status(HttpStatus.UPGRADE_REQUIRED)
+                    .body(SuccessResponse.builder().success(true).message("Задача успешно обновлена").data(createdTask).build());
+        } catch (RuntimeException e) {
+            logger.error("Ошибка при обновлении задачи: {}",e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorResponse.builder()
+                    .success(false).status(HttpStatus.BAD_REQUEST.value())
+                    .message("Ошибка:").details(e.getMessage()).build());
         }
     }
 
@@ -46,10 +63,10 @@ public class TaskControllerImpl implements TaskController {
     @Operation(summary = "Найти задачу по id")
     public ResponseEntity<?> findTaskById(@PathVariable Long id) {
         try {
-            Task foundTask = taskService.findById(id);
+            TaskDto foundTask = taskService.findById(id);
             return ResponseEntity.ok(SuccessResponse.builder().success(true).message("Задача найдена").data(foundTask).build());
         } catch (RuntimeException e) {
-            return catchException(e,"Ошибка при поиске задачи id "+id);
+            return catchException(e,"Ошибка при поиске задачи");
         }
     }
 
@@ -78,7 +95,7 @@ public class TaskControllerImpl implements TaskController {
     }
     private ResponseEntity<ErrorResponse> catchException(RuntimeException e, String message) {
         logger.error(message,e.getMessage());
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse(false,HttpStatus.INTERNAL_SERVER_ERROR.value(),message,e.getMessage()));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(false,HttpStatus.BAD_REQUEST.value(),message,e.getMessage()));
     }
 }

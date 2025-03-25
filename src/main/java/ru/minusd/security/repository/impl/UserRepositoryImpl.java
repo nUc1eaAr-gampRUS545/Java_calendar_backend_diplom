@@ -4,14 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.hibernate.query.Query;
-import ru.minusd.security.domain.model.FileInfo;
-import ru.minusd.security.domain.model.Organization;
-import ru.minusd.security.domain.model.Task;
-import ru.minusd.security.domain.model.User;
+import ru.minusd.security.domain.entity.Organization;
+import ru.minusd.security.domain.entity.Task;
+import ru.minusd.security.domain.entity.User;
 import ru.minusd.security.repository.UserRepository;
 
 import java.util.HashSet;
@@ -40,10 +37,20 @@ public class UserRepositoryImpl implements UserRepository {
         return Optional.ofNullable(user);
     }
     @Override
+    public Optional<User> update(User user) {
+        try (Session session = getSession()) {
+            Transaction transaction = session.beginTransaction();
+            session.persist(user);
+            transaction.commit();
+
+        }
+        return Optional.ofNullable(user);
+    }
+    @Override
     public void setOrganization(User user, Organization organization) {
         try (Session session = getSession()) {
             Transaction transaction = session.beginTransaction();
-            user.setOrganization(organization);
+            user.setOrganizationByUser(organization);
             session.merge(organization);
             transaction.commit();
         }
@@ -53,8 +60,7 @@ public class UserRepositoryImpl implements UserRepository {
     public Optional<User> findByUsername(String username) {
         try (Session session = getSession()) {
             String hql = "FROM User u WHERE u.username = :username";
-            Query<User> query = session.createQuery(hql, User.class);
-            query.setParameter("username", username);
+            Query<User> query = session.createQuery(hql, User.class).setParameter("username", username);
             return query.uniqueResultOptional();
         }
 
@@ -76,8 +82,10 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public List<User> findAll() {
-        return List.of();
+    public Optional<List<User>> findAll() {
+        try (Session session = getSession()){
+            return Optional.ofNullable(session.createQuery("from User").list());
+        }
     }
     @Override
     public Optional<Set<User>> findAllByUserIds(Set<Long> userIds) {
@@ -91,8 +99,7 @@ public class UserRepositoryImpl implements UserRepository {
     public boolean existsByUsername(String username) {
         try (Session session = getSession()) {
             String hql = "SELECT count(u) FROM User u WHERE u.username = :username";
-            Query<Long> query = session.createQuery(hql, Long.class);
-            query.setParameter("username", username);
+            Query<Long> query = session.createQuery(hql,Long.class).setParameter("username", username);
             return query.uniqueResult() > 0;
         }
 

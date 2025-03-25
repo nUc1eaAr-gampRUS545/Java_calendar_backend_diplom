@@ -5,8 +5,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.core.io.Resource;
-import ru.minusd.security.domain.model.FileInfo;
+import ru.minusd.security.domain.entity.FileInfo;
 import ru.minusd.security.repository.FileRepository;
 import ru.minusd.security.service.FileService;
 import ru.minusd.security.utils.FileManager;
@@ -41,8 +40,8 @@ public class FileServiceImpl implements FileService {
         return createdFile;
     }
     @Override
-    public Resource download(String key) throws IOException {
-        return fileManager.download(key);
+    public String download(String path) throws IOException {
+        return fileManager.download(path);
     }
 
     @Transactional(readOnly = true)

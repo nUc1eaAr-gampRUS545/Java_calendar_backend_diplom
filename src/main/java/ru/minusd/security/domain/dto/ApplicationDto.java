@@ -1,7 +1,8 @@
 package ru.minusd.security.domain.dto;
 
 import lombok.Data;
-import ru.minusd.security.domain.model.FileInfo;
+import ru.minusd.security.domain.entity.FileInfo;
+import ru.minusd.security.domain.entity.WorkType;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -25,6 +26,8 @@ public class ApplicationDto implements Serializable {
     private Set<FileInfo> files;
 
     private OrganizationDto organization;
+
+    private WorkType type;
 
     private UserDto createdByUser;
 

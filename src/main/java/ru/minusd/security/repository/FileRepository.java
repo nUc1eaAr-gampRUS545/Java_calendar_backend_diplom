@@ -1,6 +1,6 @@
 package ru.minusd.security.repository;
 
-import ru.minusd.security.domain.model.FileInfo;
+import ru.minusd.security.domain.entity.FileInfo;
 
 import java.util.Optional;
 import java.util.Set;

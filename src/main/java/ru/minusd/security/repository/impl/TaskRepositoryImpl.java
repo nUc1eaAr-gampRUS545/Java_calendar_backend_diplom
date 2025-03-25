@@ -5,8 +5,8 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.springframework.stereotype.Repository;
-import ru.minusd.security.domain.model.FileInfo;
-import ru.minusd.security.domain.model.Task;
+import ru.minusd.security.domain.entity.FileInfo;
+import ru.minusd.security.domain.entity.Task;
 import ru.minusd.security.repository.TaskRepository;
 
 import java.util.List;
@@ -43,10 +43,10 @@ public class TaskRepositoryImpl implements TaskRepository {
     }
 
     @Override
-    public List<Task> findAll() {
+    public Optional<List<Task>> findAll() {
         try (Session session = getSession()) {
             List tasks = session.createQuery("from Task").list();
-            return tasks;
+            return Optional.ofNullable(tasks);
         }
     }
 
@@ -54,15 +54,22 @@ public class TaskRepositoryImpl implements TaskRepository {
     public void deleteById(Long id) {
         try (Session session = getSession()) {
             Transaction transaction = session.beginTransaction();
-            Optional<Task> task = findById(id);
-            if(task.isPresent()) {
+            Task task = session.get(Task.class,id);
+            if (task != null) {
+                task.setUsers(null);
+                task.setFiles(null);
+                task.setPlace(null);
+                task.setCreatedUserTask(null);
                 session.remove(task);
+                session.flush();
+                session.clear();
                 transaction.commit();
             }
 
         }
     }
-    public void addFiles(Long taskId, Set<FileInfo> files) {
+
+    public void addFiles(Long taskId,Set<FileInfo> files) {
         try (Session session = getSession()) {
             Transaction transaction = session.beginTransaction();
             Task task = findById(taskId).get();
@@ -70,5 +77,7 @@ public class TaskRepositoryImpl implements TaskRepository {
             session.merge(task);
             transaction.commit();
         }
-    };
+    }
+
+    ;
 }

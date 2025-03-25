@@ -5,7 +5,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
-import ru.minusd.security.domain.model.FileInfo;
+import org.springframework.transaction.annotation.Transactional;
+import ru.minusd.security.domain.entity.FileInfo;
 import ru.minusd.security.repository.FileRepository;
 
 import java.sql.Date;
@@ -54,8 +55,8 @@ public class FileRepositoryImpl implements FileRepository {
     }
 
     @Override
-    public List<FileInfo> findAll() {
-        return List.of();
+    public Optional<List<FileInfo>> findAll() {
+        return null;
     }
 
 
@@ -75,6 +76,7 @@ public class FileRepositoryImpl implements FileRepository {
     }
 
     @Override
+    @Transactional
     public Optional<Set<FileInfo>>  findByFileIds(Set<Long> fileIds) {
         Set<FileInfo> files = new HashSet<>();
         fileIds.forEach(fileId -> {

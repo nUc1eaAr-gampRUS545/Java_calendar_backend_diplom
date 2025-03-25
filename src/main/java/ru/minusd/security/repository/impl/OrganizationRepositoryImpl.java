@@ -5,7 +5,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.springframework.stereotype.Repository;
-import ru.minusd.security.domain.model.Organization;
+import ru.minusd.security.domain.entity.Organization;
 import ru.minusd.security.repository.OrganizationRepository;
 
 import java.util.List;
@@ -40,9 +40,10 @@ public class OrganizationRepositoryImpl implements OrganizationRepository {
     }
 
     @Override
-    public List<Organization> findAll() {
+    public Optional<List<Organization>> findAll() {
         try (Session session = getSession()) {
-            return (List<Organization>) session.createQuery("from Organization").list();
+            return Optional.ofNullable((List<Organization>)
+                    session.createQuery("from Organization").list());
         }
     }
 

@@ -4,13 +4,13 @@ import lombok.Data;
 import org.springframework.stereotype.Component;
 import ru.minusd.security.domain.dto.OrganizationDto;
 import ru.minusd.security.domain.dto.UserDto;
-import ru.minusd.security.domain.model.User;
+import ru.minusd.security.domain.entity.User;
 import ru.minusd.security.mapper.GenericMap;
 
 @Component
 @Data
 public class UserMapper implements GenericMap<User, UserDto> {
-    private OrganizationMapper organizationMapper = new OrganizationMapper();
+    private final OrganizationMapper organizationMapper;
     @Override
     public UserDto map(User user) {
 
@@ -18,7 +18,7 @@ public class UserMapper implements GenericMap<User, UserDto> {
             return null;
         }
 
-        OrganizationDto organizationDto = organizationMapper.map(user.getOrganization());
+        OrganizationDto organizationDto = organizationMapper.map(user.getOrganizationByUser());
         UserDto userDto = new UserDto();
         userDto.setId(user.getId());
         userDto.setFirstname(user.getFirstname());

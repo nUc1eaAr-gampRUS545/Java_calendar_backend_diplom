@@ -1,19 +1,21 @@
 package ru.minusd.security.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import ru.minusd.security.domain.model.Organization;
-import ru.minusd.security.domain.model.Role;
-import ru.minusd.security.domain.model.Task;
-import ru.minusd.security.domain.model.User;
+import org.springframework.transaction.annotation.Transactional;
+import ru.minusd.security.domain.dto.TaskDto;
+import ru.minusd.security.domain.dto.UserDto;
+import ru.minusd.security.domain.entity.Role;
+import ru.minusd.security.domain.entity.User;
+import ru.minusd.security.mapper.impl.TaskMapper;
+import ru.minusd.security.mapper.impl.UserMapper;
 import ru.minusd.security.repository.UserRepository;
 import ru.minusd.security.service.UserService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -21,16 +23,18 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository repository;
+    private final UserMapper userMapper;
+    private final TaskMapper taskMapper;
 
     @Override
     //@CacheEvict(value = "users", allEntries = true) // Очистка кеша при сохранении
     public User save(User user) {
-        return repository.save(user).orElseThrow(()-> new UsernameNotFoundException("User not found"));
+        return repository.save(user).orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
 
     @Override
-   // @Cacheable(value = "users", key = "#user.username", unless = "#result == null") // Кеширование при создании
+    // @Cacheable(value = "users", key = "#user.username", unless = "#result == null") // Кеширование при создании
     public User create(User user) {
         if (repository.existsByUsername(user.getUsername())) {
             throw new RuntimeException("Пользователь с таким именем уже существует");
@@ -51,6 +55,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     //@Cacheable(value = "users", key = "#id", unless = "#result == null") // Кеширование по id
     public User findById(Long id) {
         return repository.findById(id)
@@ -58,14 +63,24 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<Task> findUserTasksById(Long id) {
-        return repository.findUsersTasks(id);
+    public List<UserDto> findAll() {
+        List<UserDto> usersDto = new ArrayList<>();
+        List<User> users = repository.findAll()
+                .orElseThrow(() -> new UsernameNotFoundException("Пользователи не найдены!"));
+        users.forEach(user -> {
+            usersDto.add(userMapper.map(user));
+        });
+        return usersDto;
     }
 
     @Override
-   // @CacheEvict(value = "users", key = "#user.username") // Очистка кеша при изменении организации
-    public void setOrganization(User user, Organization organization) {
-        repository.setOrganization(user, organization);
+    public List<TaskDto> findUserTasksById(Long id) {
+        List<TaskDto> taskDtos = new ArrayList<>();
+        repository.findUsersTasks(id).forEach(task -> {
+            TaskDto taskDto = taskMapper.map(task);
+            taskDtos.add(taskDto);
+        });
+        return taskDtos;
     }
 
     @Override
@@ -74,17 +89,18 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    //@Cacheable(value = "users", key = "#root.methodName + '-' + #root.args[0]") // Кеширование текущего пользователя
+    //@Cacheable(value = "users", key = "#root.methodName + '-' + #root.args[0]")
     public User getCurrentUser() {
         var username = SecurityContextHolder.getContext().getAuthentication().getName();
         return getByUsername(username);
     }
 
 
-    // @CacheEvict(value = "users", key = "#root.target.getCurrentUser().username") // Очистка кеша при изменении роли
+    // @CacheEvict(value = "users", key = "#root.target.getCurrentUser().username")
     public void getAdmin() {
         var user = getCurrentUser();
         user.setRole(Role.ROLE_ADMIN);
         save(user);
     }
+
 }

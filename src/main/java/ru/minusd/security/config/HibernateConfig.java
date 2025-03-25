@@ -25,10 +25,10 @@ public class HibernateConfig {
     @Bean
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName(env.getRequiredProperty("datasource.driver"));
-        dataSource.setUrl(env.getRequiredProperty("datasource.url"));
-        dataSource.setUsername(env.getRequiredProperty("datasource.username"));
-        dataSource.setPassword(env.getRequiredProperty("datasource.password"));
+        dataSource.setDriverClassName(env.getRequiredProperty("spring.datasource.driver-class-name"));
+        dataSource.setUrl(env.getRequiredProperty("spring.datasource.url"));
+        dataSource.setUsername(env.getRequiredProperty("spring.datasource.username"));
+        dataSource.setPassword(env.getRequiredProperty("spring.datasource.password"));
         return dataSource;
     }
 
@@ -49,7 +49,7 @@ public class HibernateConfig {
     public LocalSessionFactoryBean sessionFactoryBean() {
         LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
         sessionFactory.setDataSource(dataSource());
-        sessionFactory.setPackagesToScan("ru.minusd.security.domain.model");
+        sessionFactory.setPackagesToScan("ru.minusd.security.domain.entity");
         sessionFactory.setHibernateProperties(hibernateProperties());
         return sessionFactory;
     }
